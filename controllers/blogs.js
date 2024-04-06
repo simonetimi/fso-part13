@@ -38,6 +38,17 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.put('/:id', blogSelector, async (req, res) => {
+  if (req.blog) {
+    console.log(req.blog);
+    req.blog.likes = req.body.likes;
+    await req.blog.save();
+    res.status(200).end();
+  } else {
+    res.status(404).json({ error: 'Blog not found' });
+  }
+});
+
 router.delete('/:id', blogSelector, async (req, res) => {
   try {
     if (req.blog) {
