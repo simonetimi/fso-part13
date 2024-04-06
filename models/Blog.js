@@ -1,4 +1,4 @@
-const { Sequelize, DataTypes, Model } = require("sequelize");
+const { Sequelize, DataTypes, Model } = require('sequelize');
 
 // connect to db
 const sequelize = new Sequelize(process.env.DATABASE_URL);
@@ -32,8 +32,10 @@ Blog.init(
     sequelize,
     underscored: true,
     timestamps: false,
-    modelName: "blog",
+    modelName: 'blog',
   },
 );
+
+Blog.sync();
 
 module.exports = Blog;
