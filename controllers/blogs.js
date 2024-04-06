@@ -24,7 +24,7 @@ router.get('/:id', blogSelector, async (req, res) => {
 });
 
 // post blog endpoint
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
     const blog = await Blog.create(req.body);
     /*
@@ -34,29 +34,34 @@ router.post('/', async (req, res) => {
         */
     return res.json(blog);
   } catch (error) {
-    return res.status(400).json({ error });
+    next(error);
   }
 });
 
-router.put('/:id', blogSelector, async (req, res) => {
-  if (req.blog) {
-    console.log(req.blog);
-    req.blog.likes = req.body.likes;
-    await req.blog.save();
-    res.status(200).end();
-  } else {
-    res.status(404).json({ error: 'Blog not found' });
+router.put('/:id', blogSelector, async (req, res, next) => {
+  try {
+    if (req.blog) {
+      console.log(req.blog);
+      req.blog.likes = req.body.likes;
+      await req.blog.save();
+      res.status(200).end();
+    } else {
+      const error = { name: 'NotFound' };
+      next(error);
+    }
+  } catch (error) {
+    next(error);
   }
 });
 
-router.delete('/:id', blogSelector, async (req, res) => {
+router.delete('/:id', blogSelector, async (req, res, next) => {
   try {
     if (req.blog) {
       await req.blog.destroy();
       res.status(204).end();
     }
   } catch (error) {
-    return res.status(400).json({ error });
+    next(error);
   }
 });
 

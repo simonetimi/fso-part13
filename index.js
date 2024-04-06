@@ -14,3 +14,17 @@ app.listen(PORT, () => {
 
 // routes
 app.use('/api/blogs', blogRouter);
+
+// error handler
+app.use((err, req, res, next) => {
+  if (err.name === 'SequelizeValidationError') {
+    // Handle validation error
+    res.status(400).json({ error: err.message });
+  } else if (err.name === 'SequelizeUniqueConstraintError') {
+    // Handle unique constraint error
+    res.status(400).json({ error: 'Duplicate entry' });
+  } else {
+    // Handle general error
+    res.status(500).json({ error: 'An error occurred' });
+  }
+});
