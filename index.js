@@ -1,11 +1,17 @@
 require('dotenv').config();
 const express = require('express');
 const { PORT } = require('./utils/config');
+const { connectToDatabase } = require('./utils/db');
 
 const blogRouter = require('./controllers/blogs');
 const userRouter = require('./controllers/users');
 const loginRouter = require('./controllers/login');
 const authorRouter = require('./controllers/authors');
+
+// Connect to database and run migrations
+(async () => {
+    await connectToDatabase();
+})();
 
 // run server
 const app = express();
