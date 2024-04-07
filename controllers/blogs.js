@@ -61,11 +61,17 @@ router.put('/:id', blogSelector, async (req, res, next) => {
     }
 });
 
-router.delete('/:id', blogSelector, async (req, res, next) => {
+router.delete('/:id', tokenExtractor, blogSelector, async (req, res, next) => {
     try {
         if (req.blog) {
-            await req.blog.destroy();
-            res.status(204).end();
+            if (req.blog.userId === req.decodedToken.id) {
+                await req.blog.destroy();
+                res.status(204).end();
+            } else {
+                return res.status(401).send('Unauthorized user');
+            }
+        } else {
+            return res.status(404).send('Blog not found');
         }
     } catch (error) {
         next(error);
