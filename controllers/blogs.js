@@ -1,4 +1,5 @@
 const express = require('express');
+const { Op } = require('sequelize');
 const { Blog } = require('../models');
 const { User } = require('../models');
 const { tokenExtractor } = require('../utils/tokenManager');
@@ -12,11 +13,18 @@ const blogSelector = async (req, res, next) => {
 };
 // get all blogs endpoint
 router.get('/', async (req, res) => {
+    const where = {};
+    if (req.query.search) {
+        where.title = {
+            [Op.substring]: req.query.search,
+        };
+    }
     const blogs = await Blog.findAll({
         include: {
             model: User,
             attributes: ['username'],
         },
+        where,
     });
     res.json(blogs);
 });
