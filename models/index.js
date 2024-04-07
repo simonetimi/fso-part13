@@ -8,6 +8,10 @@ Blog.belongsTo(User);
 User.belongsToMany(Blog, { through: ReadingList });
 Blog.belongsToMany(User, { through: ReadingList });
 
+User.hasMany(ReadingList, { foreignKey: 'userId', as: 'readings' });
+ReadingList.belongsTo(User, { foreignKey: 'userId' });
+ReadingList.belongsTo(Blog, { foreignKey: 'blogId' });
+
 module.exports = {
     Blog,
     User,
