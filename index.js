@@ -5,6 +5,7 @@ const { PORT } = require('./utils/config');
 const blogRouter = require('./controllers/blogs');
 const userRouter = require('./controllers/users');
 const loginRouter = require('./controllers/login');
+const authorRouter = require('./controllers/authors');
 
 // run server
 const app = express();
@@ -18,6 +19,7 @@ app.listen(PORT, () => {
 app.use('/api/blogs', blogRouter);
 app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/authors', authorRouter);
 
 // error handler
 app.use((err, req, res) => {
