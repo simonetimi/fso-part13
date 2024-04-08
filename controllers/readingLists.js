@@ -1,5 +1,6 @@
 const express = require('express');
 const { ReadingList } = require('../models');
+const { tokenExtractor } = require('../utils/tokenManager');
 
 const router = express.Router();
 
@@ -9,6 +10,23 @@ router.get('/', async (req, res) => {
         attributes: { exclude: ['read'] },
     });
     res.json(users);
+});
+
+router.put('/:id', tokenExtractor, async (req, res, next) => {
+    try {
+        const match = await ReadingList.findByPk(req.params.id);
+        const userId = req.decodedToken.id;
+        if (userId !== match.userId) {
+            return res
+                .status(401)
+                .send('You must be the owner of the blog to mark it as read');
+        }
+        match.read = req.body.read;
+        await match.save();
+        return res.status(200).send('Blog marked successfully');
+    } catch (error) {
+        next(error);
+    }
 });
 
 module.exports = router;
