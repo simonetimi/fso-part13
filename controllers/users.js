@@ -2,6 +2,7 @@ const express = require('express');
 const { User } = require('../models');
 const { Blog } = require('../models');
 const { ReadingList } = require('../models');
+const { Op } = require('sequelize');
 
 const router = express.Router();
 
@@ -32,7 +33,37 @@ router.get('/', async (req, res) => {
 
 // get one User
 router.get('/:id', async (req, res) => {
-    const user = await User.findByPk(req.params.id);
+    const read = req.query.read === 'true';
+    let where = {};
+    if (req.query.read) {
+        const read = req.query.read === 'true';
+        where = {
+            read: { [Op.eq]: read },
+        };
+    }
+    const user = await User.findByPk(req.params.id, {
+        include: [
+            {
+                model: ReadingList,
+                as: 'readings',
+                attributes: { exclude: ['userId', 'blogId'] },
+                where,
+                // required is necessary if no unread or rad blogs are present, otherwise it won't return anything
+                required: false,
+                include: {
+                    model: Blog,
+                    attributes: [
+                        'id',
+                        'author',
+                        'url',
+                        'title',
+                        'likes',
+                        'year',
+                    ],
+                },
+            },
+        ],
+    });
     if (user) {
         res.json(user);
     } else {
