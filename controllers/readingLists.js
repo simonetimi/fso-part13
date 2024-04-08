@@ -1,6 +1,7 @@
 const express = require('express');
 const { ReadingList } = require('../models');
 const { tokenExtractor } = require('../utils/tokenManager');
+const checkSessionValidity = require('../utils/sessionManager');
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ router.put('/:id', tokenExtractor, async (req, res, next) => {
     try {
         const match = await ReadingList.findByPk(req.params.id);
         const userId = req.decodedToken.id;
+        await checkSessionValidity(userId, req.rawToken);
         if (userId !== match.userId) {
             return res
                 .status(401)

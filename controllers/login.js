@@ -1,5 +1,6 @@
 const express = require('express');
 const { User } = require('../models');
+const { Session } = require('../models');
 const { tokenCreator } = require('../utils/tokenManager');
 
 const router = express.Router();
@@ -25,6 +26,8 @@ router.post('/', async (req, res, next) => {
             id: foundUser.id,
         };
         const token = tokenCreator(user);
+        // store session in db
+        await Session.create({ token, userId: user.id });
         return res.status(200).send({ token, user });
     } catch (error) {
         next(error);

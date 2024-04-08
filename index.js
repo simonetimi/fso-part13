@@ -6,6 +6,7 @@ const { connectToDatabase } = require('./utils/db');
 const blogRouter = require('./controllers/blogs');
 const userRouter = require('./controllers/users');
 const loginRouter = require('./controllers/login');
+const logoutRouter = require('./controllers/logout');
 const authorRouter = require('./controllers/authors');
 const readingListRouter = require('./controllers/readingLists');
 
@@ -26,6 +27,7 @@ app.listen(PORT, () => {
 app.use('/api/blogs', blogRouter);
 app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);
+app.use('/api/logout', logoutRouter);
 app.use('/api/authors', authorRouter);
 app.use('/api/readinglists', readingListRouter);
 

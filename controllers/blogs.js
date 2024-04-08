@@ -3,6 +3,7 @@ const { Op } = require('sequelize');
 const { Blog } = require('../models');
 const { User } = require('../models');
 const { tokenExtractor } = require('../utils/tokenManager');
+const checkSessionValidity = require('../utils/sessionManager');
 
 const router = express.Router();
 
@@ -50,6 +51,7 @@ router.get('/:id', blogSelector, async (req, res) => {
 router.post('/', tokenExtractor, async (req, res, next) => {
     try {
         const userId = req.decodedToken.id;
+        await checkSessionValidity(userId, req.rawToken);
         const user = await User.findByPk(userId);
         if (!user) {
             return res.status(401).send('Invalid request: User does not exist');
@@ -86,6 +88,7 @@ router.delete('/:id', tokenExtractor, blogSelector, async (req, res, next) => {
     try {
         if (req.blog) {
             if (req.blog.userId === req.decodedToken.id) {
+                await checkSessionValidity(req.decodedToken.id, req.rawToken);
                 await req.blog.destroy();
                 res.status(204).end();
             } else {
